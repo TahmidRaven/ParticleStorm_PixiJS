@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Particle Storm — Survive</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      user-select: none;
+      background: #050510;
+    }
+
+    #bg {
+      position: fixed;
+      inset: 0;
+      background-image: url('/backgroundwebp.webp');
+      background-size: cover;
+      background-position: center;
+      z-index: -2;
+    }
+
+    canvas {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+
+    #hud {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      pointer-events: none;
+      line-height: 2;
+    }
+
+    #hud .val { color: #a78bfa; }
+
+    #score-display {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      text-align: right;
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      pointer-events: none;
+      line-height: 2;
+    }
+
+    #score-display .val { color: #34d399; }
+
+    #healthbar-wrap {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
+      pointer-events: none;
+    }
+
+    #healthbar-label {
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    #healthbar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    #healthbar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #a78bfa, #38bdf8);
+      border-radius: 3px;
+      transition: width 0.1s, background 0.3s;
+    }
+
+    #overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(5, 5, 16, 0.82);
+      backdrop-filter: blur(8px);
+      pointer-events: all;
+      z-index: 10;
+    }
+
+    #overlay h1 {
+      font-size: clamp(32px, 6vw, 80px);
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    #overlay p {
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    #overlay .big-score {
+      font-size: clamp(28px, 4vw, 56px);
+      color: #34d399;
+      letter-spacing: 0.2em;
+      margin: 16px 0 32px;
+    }
+
+    #overlay .best {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: rgba(167,139,250,0.7);
+      margin-bottom: 40px;
+      text-transform: uppercase;
+    }
+
+    #start-btn {
+      background: transparent;
+      border: 1px solid rgba(167,139,250,0.6);
+      color: #a78bfa;
+      padding: 12px 40px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    #start-btn:hover {
+      background: rgba(167,139,250,0.15);
+      border-color: #a78bfa;
+      color: white;
+    }
+
+    #overlay .hint {
+      margin-top: 24px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.2);
+      text-transform: uppercase;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Background image layer -->
+  <div id="bg"></div>
+
+  <!-- HUD -->
+  <div id="hud">
+    Time: <span class="val" id="hud-time">0.0s</span><br>
+    Level: <span class="val" id="hud-level">1</span><br>
+    Particles: <span class="val" id="hud-count">0</span>
+  </div>
+
+  <div id="score-display">
+    Score: <span class="val" id="hud-score">0</span><br>
+    Best: <span class="val" id="hud-best">0</span>
+  </div>
+
+  <div id="healthbar-wrap">
+    <div id="healthbar-label">Shield</div>
+    <div id="healthbar-bg">
+      <div id="healthbar"></div>
+    </div>
+  </div>
+
+  <!-- Start / Game Over screen -->
+  <div id="overlay">
+    <h1>Particle Storm</h1>
+    <p>Move your cursor to survive</p>
+    <p style="color:rgba(255,255,255,0.2); font-size:10px; letter-spacing:0.15em;">
+      Particles get faster every 10 seconds
+    </p>
+    <div class="big-score hidden" id="final-score"></div>
+    <div class="best hidden" id="final-best"></div>
+    <button id="start-btn">Start Game</button>
+    <div class="hint">Move mouse · Touch supported</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
